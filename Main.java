@@ -1,7 +1,7 @@
 import javax.swing.*;
 
 public class Main {
-    private static UserManager userManager = new UserManager();
+    private static final UserManager userManager = new UserManager();
     private static JFrame currentFrame;
 
     public static void main(String[] args) {
