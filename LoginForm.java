@@ -46,7 +46,6 @@ public class LoginForm extends JFrame {
         userText.setBounds(100, 50, 165, 25);
         centerPanel.add(userText);
 
-
         JLabel passwordLabel = new JLabel("Password");
         passwordLabel.setBounds(10, 80, 80, 25);
         centerPanel.add(passwordLabel);
@@ -54,7 +53,6 @@ public class LoginForm extends JFrame {
         JPasswordField passwordText = new JPasswordField(20);
         passwordText.setBounds(100, 80, 165, 25);
         centerPanel.add(passwordText);
-
 
         JButton loginButton = new JButton("Login");
         loginButton.setBounds(60, 150, 150, 25);
@@ -72,11 +70,12 @@ public class LoginForm extends JFrame {
             String username = userText.getText();
             String password = new String(passwordText.getPassword());
             if (userManager.login(username, password)) {
-                JOptionPane.showMessageDialog(LoginForm.this, "Login successful!","Successful!", JOptionPane.INFORMATION_MESSAGE);
+                LoggedInUser.setUsername(username);
+                JOptionPane.showMessageDialog(LoginForm.this, "Login successful!", "Successful!", JOptionPane.INFORMATION_MESSAGE);
                 dispose(); // 关闭登录窗口
-                new HomePage(userManager); // 打开主页窗口
+                Main.showHomePage(); // 打开主页窗口
             } else {
-                JOptionPane.showMessageDialog(LoginForm.this, "Invalid username or password.","Invalid!", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(LoginForm.this, "Invalid username or password.", "Invalid!", JOptionPane.ERROR_MESSAGE);
             }
         });
 

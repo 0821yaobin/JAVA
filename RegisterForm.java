@@ -70,9 +70,9 @@ public class RegisterForm extends JFrame {
             String username = userText.getText();
             String password = new String(passwordText.getPassword());
             if (userManager.register(username, password)) {
-                JOptionPane.showMessageDialog(RegisterForm.this, "Registration successful!","Successful!", JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(RegisterForm.this, "Registration successful!", "Successful!", JOptionPane.INFORMATION_MESSAGE);
             } else {
-                JOptionPane.showMessageDialog(RegisterForm.this, "Username already exists.","Invalid!", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(RegisterForm.this, "Username already exists.", "Invalid!", JOptionPane.ERROR_MESSAGE);
             }
         });
 

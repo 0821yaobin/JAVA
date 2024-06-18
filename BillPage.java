@@ -43,7 +43,7 @@ public class BillPage extends JFrame {
         JLabel expenditureLabel = new JLabel("Total Expenditure: RM" + totalExpenditure);
         expenditureLabel.setFont(new Font("Arial", Font.BOLD, 15));
 
-        JLabel balanceLabel = new JLabel("Balance: RM" + balance);
+        JLabel balanceLabel = new JLabel("Balance (RM): " + balance);
         balanceLabel.setFont(new Font("Arial", Font.BOLD, 15));
 
         rightPanel.add(incomeLabel);

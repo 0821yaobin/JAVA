@@ -1,5 +1,7 @@
 import java.awt.*;
+import java.util.List;
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
 
 public class HomePage extends JFrame {
 
@@ -14,18 +16,19 @@ public class HomePage extends JFrame {
 
         JPanel topPanel = new JPanel();
         topPanel.setPreferredSize(new Dimension(600, 50));
-        JLabel systemLabel = new JLabel("Personal Finance Manger");
+        JLabel systemLabel = new JLabel("Personal Finance Manager");
         systemLabel.setFont(new Font("Verdana", Font.BOLD, 30));
         topPanel.add(systemLabel);
 
         JPanel centerPanel = new JPanel();
         centerPanel.setLayout(new GridLayout(3, 2, 10, 10));
-        
+
         JButton expendButton = createStyledButton("Expend", Color.BLUE);
         JButton incomeButton = createStyledButton("Income", Color.BLUE);
         JButton billButton = createStyledButton("Bill", Color.ORANGE);
         JButton helpButton = createStyledButton("Help", Color.ORANGE);
         JButton logoutButton = createStyledButton("Logout", Color.RED);
+        JButton reportButton = createStyledButton("Report", Color.GREEN);
 
         expendButton.addActionListener(e -> {
             dispose();
@@ -42,21 +45,20 @@ public class HomePage extends JFrame {
             new BillPage(userManager);
         });
 
-        logoutButton.addActionListener(e -> Main.showLoginForm());
-        ImageIcon originLog = new ImageIcon("logout.png");
-        Image editLog = originLog.getImage().getScaledInstance(50, 50, Image.SCALE_SMOOTH); // 缩放图像
-        ImageIcon logout = new ImageIcon(editLog);
-        JLabel logoutlabel = new JLabel(logout);
-        logoutlabel.setHorizontalTextPosition(JLabel.RIGHT);
-        logoutButton.add(logoutlabel);
+        logoutButton.addActionListener(e -> {
+            dispose();
+            Main.showLoginForm();
+        });
 
         helpButton.addActionListener(e -> showHelpDialog());
+
+        reportButton.addActionListener(e -> showReportDialog());
 
         centerPanel.add(expendButton);
         centerPanel.add(incomeButton);
         centerPanel.add(billButton);
         centerPanel.add(helpButton);
-        centerPanel.add(new JLabel());
+        centerPanel.add(reportButton);
         centerPanel.add(logoutButton);
 
         add(topPanel, BorderLayout.NORTH);
@@ -72,26 +74,29 @@ public class HomePage extends JFrame {
         helpDialog.setSize(400, 300);
         helpDialog.setLayout(new BorderLayout());
 
-        JTextArea helpTextArea = new JTextArea();
-        helpTextArea.setEditable(false);
-        helpTextArea.setLineWrap(true);
-        helpTextArea.setWrapStyleWord(true);
-        helpTextArea.setText(
-            "Income Button:\n" +
-            "Click this button to go to the Income page, where you can add details about your income, such as source and amount.\n\n" +
-            "Expenditure Button:\n" +
-            "Click this button to go to the Expenditure page, where you can add details about your expenses, such as description and amount.\n\n" +
-            "Bill Button:\n" +
-            "Click this button to view a summary of your total income, total expenditure, and the remaining balance.\n\n"
-        );
+        JTextPane helpTextPane = new JTextPane();
+        helpTextPane.setEditable(false);
+        helpTextPane.setContentType("text/html");
 
-        helpDialog.add(new JScrollPane(helpTextArea), BorderLayout.CENTER);
+        String helpText = "<html>"
+                + "<body style='font-family: Arial;'>"
+                + "<b>Income Button:</b><br>"
+                + "Click this button to go to the Income page, where you can add details about your income, such as source and amount.<br><br>"
+                + "<b>Expenditure Button:</b><br>"
+                + "Click this button to go to the Expenditure page, where you can add details about your expenses, such as description and amount.<br><br>"
+                + "<b>Bill Button:</b><br>"
+                + "Click this button to view a summary of your total income, total expenditure, and the remaining balance.<br>"
+                + "</body>"
+                + "</html>";
+
+        helpTextPane.setText(helpText);
+        helpDialog.add(new JScrollPane(helpTextPane), BorderLayout.CENTER);
 
         JButton closeButton = new JButton("Close");
-        closeButton.setPreferredSize(new Dimension(600,25));
+        closeButton.setPreferredSize(new Dimension(600, 25));
         closeButton.setFocusable(false);
-        closeButton.setBackground(Color.red);
-        closeButton.setForeground(Color.white);
+        closeButton.setBackground(Color.RED);
+        closeButton.setForeground(Color.WHITE);
         closeButton.setFont(new Font("Arial", Font.BOLD, 15));
 
         closeButton.addActionListener(e -> helpDialog.dispose());
@@ -101,11 +106,72 @@ public class HomePage extends JFrame {
         helpDialog.setVisible(true);
     }
 
+    private void showReportDialog() {
+        JDialog reportDialog = new JDialog(this, "Report", true);
+        reportDialog.setSize(600, 400);
+        reportDialog.setLayout(new BorderLayout());
+
+        // Create the table to display expenses and incomes
+        String[] columnNames = {"Type", "Description", "Amount"};
+        DefaultTableModel model = new DefaultTableModel(columnNames, 0);
+        JTable table = new JTable(model);
+
+        // Add expenses to the table
+        List<UserManager.ExpenseEntry> expenses = userManager.getExpenses();
+        for (UserManager.ExpenseEntry expense : expenses) {
+            model.addRow(new Object[]{"Expenditure", expense.getDescription(), expense.getAmount()});
+        }
+
+        // Add incomes to the table
+        List<UserManager.IncomeEntry> incomes = userManager.getIncomes();
+        for (UserManager.IncomeEntry income : incomes) {
+            model.addRow(new Object[]{"Income", income.getDescription(), income.getAmount()});
+        }
+
+        // Calculate and display the balance
+        double totalIncome = incomes.stream().mapToDouble(UserManager.IncomeEntry::getAmount).sum();
+        double totalExpenditure = expenses.stream().mapToDouble(UserManager.ExpenseEntry::getAmount).sum();
+        double balance = totalIncome - totalExpenditure;
+        JLabel balanceLabel = new JLabel("Balance: RM" + balance);
+        balanceLabel.setFont(new Font("Arial", Font.BOLD, 16));
+        balanceLabel.setHorizontalAlignment(SwingConstants.CENTER);
+
+        reportDialog.add(new JScrollPane(table), BorderLayout.CENTER);
+        reportDialog.add(balanceLabel, BorderLayout.NORTH);
+
+        JButton printButton = new JButton("Print");
+        printButton.setBackground(Color.BLUE);
+        printButton.setForeground(Color.WHITE);
+        printButton.setFont(new Font("Arial", Font.BOLD, 15));
+        printButton.addActionListener(e -> printReport(table, balance));
+
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.add(printButton);
+
+        reportDialog.add(buttonPanel, BorderLayout.SOUTH);
+
+        reportDialog.setLocationRelativeTo(this);
+        reportDialog.setVisible(true);
+    }
+
+    private void printReport(JTable table, double balance) {
+        try {
+            boolean complete = table.print();
+            if (complete) {
+                JOptionPane.showMessageDialog(this, "Printing Complete", "Printing Result", JOptionPane.INFORMATION_MESSAGE);
+            } else {
+                JOptionPane.showMessageDialog(this, "Printing Canceled", "Printing Result", JOptionPane.INFORMATION_MESSAGE);
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Printing Failed: " + e.getMessage(), "Printing Result", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
     private JButton createStyledButton(String text, Color bgColor) {
         JButton button = new JButton(text);
         button.setBackground(bgColor);
         button.setForeground(Color.WHITE);
-        button.setFont(new Font("Arial", Font.BOLD, 15)); 
+        button.setFont(new Font("Arial", Font.BOLD, 15));
         return button;
     }
 
