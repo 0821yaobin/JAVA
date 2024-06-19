@@ -69,6 +69,17 @@ public class RegisterForm extends JFrame {
         registerButton.addActionListener(e -> {
             String username = userText.getText();
             String password = new String(passwordText.getPassword());
+
+            if (username.length() < 8) {
+                JOptionPane.showMessageDialog(RegisterForm.this, "Username must be at least 8 characters long.", "Invalid!", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            if (password.length() < 8) {
+                JOptionPane.showMessageDialog(RegisterForm.this, "Password must be at least 8 characters long.", "Invalid!", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
             if (userManager.register(username, password)) {
                 JOptionPane.showMessageDialog(RegisterForm.this, "Registration successful!", "Successful!", JOptionPane.INFORMATION_MESSAGE);
             } else {

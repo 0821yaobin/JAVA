@@ -12,30 +12,30 @@ public class LoginForm extends JFrame {
         this.setLayout(new BorderLayout());
 
         JPanel topPanel = new JPanel();
-        topPanel.setPreferredSize(new Dimension(600, 50)); // 设置面板大小
-        JLabel systemLabel = new JLabel("Personal Finance Manager"); // 创建系统名称标签
-        systemLabel.setFont(new Font("Verdana", Font.BOLD, 30)); // 设置字体和大小
-        topPanel.add(systemLabel); // 将系统名称标签添加到顶部面板中
+        topPanel.setPreferredSize(new Dimension(600, 50));
+        JLabel systemLabel = new JLabel("Personal Finance Manager");
+        systemLabel.setFont(new Font("Verdana", Font.BOLD, 30));
+        topPanel.add(systemLabel);
 
         // 左侧和右侧用于插入Logo的面板
         JPanel leftPanel = new JPanel();
         leftPanel.setPreferredSize(new Dimension(150, 400));
         ImageIcon originalLeft = new ImageIcon(getClass().getResource("/money.png"));
-        Image EditLeft = originalLeft.getImage().getScaledInstance(120, 270, Image.SCALE_SMOOTH); // 缩放图像
-        ImageIcon moneyIconLeft = new ImageIcon(EditLeft);
+        Image editLeft = originalLeft.getImage().getScaledInstance(120, 270, Image.SCALE_SMOOTH);
+        ImageIcon moneyIconLeft = new ImageIcon(editLeft);
         JLabel imageLabelLeft = new JLabel(moneyIconLeft);
         leftPanel.add(imageLabelLeft); 
 
         JPanel rightPanel = new JPanel();
         rightPanel.setPreferredSize(new Dimension(150, 400));
         ImageIcon originalRight = new ImageIcon(getClass().getResource("/money.png"));
-        Image EditRight = originalRight.getImage().getScaledInstance(120, 270, Image.SCALE_SMOOTH); // 缩放图像
-        ImageIcon moneyIconRight = new ImageIcon(EditRight);
+        Image editRight = originalRight.getImage().getScaledInstance(120, 270, Image.SCALE_SMOOTH);
+        ImageIcon moneyIconRight = new ImageIcon(editRight);
         JLabel imageLabelRight = new JLabel(moneyIconRight);
         rightPanel.add(imageLabelRight); 
 
         // 中间用于放置登录表单的面板
-        JPanel centerPanel = new JPanel(null); // 使用绝对定位
+        JPanel centerPanel = new JPanel(null);
         centerPanel.setPreferredSize(new Dimension(300, 400));
 
         JLabel userLabel = new JLabel("User");
@@ -56,7 +56,7 @@ public class LoginForm extends JFrame {
 
         JButton loginButton = new JButton("Login");
         loginButton.setBounds(60, 150, 150, 25);
-        loginButton.setBackground(Color.green);
+        loginButton.setBackground(Color.GREEN);
         loginButton.setFocusable(false);
         centerPanel.add(loginButton);
 
@@ -69,6 +69,17 @@ public class LoginForm extends JFrame {
         loginButton.addActionListener(e -> {
             String username = userText.getText();
             String password = new String(passwordText.getPassword());
+
+            if (username.length() < 8) {
+                JOptionPane.showMessageDialog(LoginForm.this, "Username must be at least 8 characters long.", "Invalid!", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            if (password.length() < 8) {
+                JOptionPane.showMessageDialog(LoginForm.this, "Password must be at least 8 characters long.", "Invalid!", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
             if (userManager.login(username, password)) {
                 LoggedInUser.setUsername(username);
                 JOptionPane.showMessageDialog(LoginForm.this, "Login successful!", "Successful!", JOptionPane.INFORMATION_MESSAGE);
@@ -80,7 +91,7 @@ public class LoginForm extends JFrame {
         });
 
         registerButton.addActionListener(e -> Main.showRegisterForm());
-        
+
         add(topPanel, BorderLayout.NORTH); 
         add(leftPanel, BorderLayout.WEST);
         add(centerPanel, BorderLayout.CENTER);
