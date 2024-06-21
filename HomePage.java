@@ -30,6 +30,13 @@ public class HomePage extends JFrame {
         JButton logoutButton = createStyledButton("Logout", Color.RED);
         JButton reportButton = createStyledButton("Report", Color.GREEN);
 
+        ImageIcon oriLogout = new ImageIcon("logout.png");
+        Image editLogout = oriLogout.getImage().getScaledInstance(30, 30, Image.SCALE_SMOOTH); // 缩放图像
+        ImageIcon Logout = new ImageIcon(editLogout);
+        JLabel logoutLabel = new JLabel(Logout);
+        logoutLabel.setHorizontalTextPosition(JLabel.RIGHT);
+        logoutButton.add(logoutLabel);
+
         expendButton.addActionListener(e -> {
             dispose();
             new ExpendPage(userManager);
@@ -132,7 +139,7 @@ public class HomePage extends JFrame {
         double totalIncome = incomes.stream().mapToDouble(UserManager.IncomeEntry::getAmount).sum();
         double totalExpenditure = expenses.stream().mapToDouble(UserManager.ExpenseEntry::getAmount).sum();
         double balance = totalIncome - totalExpenditure;
-        JLabel balanceLabel = new JLabel("Balance: RM" + balance);
+        JLabel balanceLabel = new JLabel("Balance (RM): " + balance);
         balanceLabel.setFont(new Font("Arial", Font.BOLD, 16));
         balanceLabel.setHorizontalAlignment(SwingConstants.CENTER);
 
